@@ -17,7 +17,13 @@
   x:Class="Xabbo.Avalonia.Views.WardrobePageView"
   x:DataType="vm:WardrobePageViewModel"
   x:Name="WardrobePageViewRoot"
+  Background="Transparent"
+  Focusable="True"
 >
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteOutfitsCmd}" />
+    <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyOutfitsCmd}" />
+  </UserControl.KeyBindings>
   <Panel>
     <controls:InfoOverlay Text="{Binding EmptyStatus}" />
     <ListBox
@@ -34,8 +40,20 @@
             Command="{Binding ImportWardrobeCmd}"
           />
           <ui:MenuFlyoutItem
+            IconSource="{icm:SymbolIconSource Symbol=Copy}"
+            Text="Copy figure strings"
+            Command="{Binding CopyOutfitsCmd}"
+            HotKey="Ctrl+C"
+          />
+          <ui:MenuFlyoutItem
+            IconSource="{icm:SymbolIconSource Symbol=ClipboardPaste}"
+            Text="Paste figure strings"
+            Command="{Binding PasteOutfitsCmd}"
+            HotKey="Ctrl+V"
+          />
+          <ui:MenuFlyoutItem
             IconSource="{icm:SymbolIconSource Symbol=BackpackAdd}"
-            Text="Add current figure"
+            Text="Add current outfit"
             Command="{Binding AddCurrentFigureCmd}"
           />
         </ui:FAMenuFlyout>
@@ -97,7 +115,7 @@
               Theme="{StaticResource TransparentButton}"
               Command="{Binding #WardrobePageViewRoot.((vm:WardrobePageViewModel)DataContext).WearFigureCmd}"
               CommandParameter="{Binding}"
-              ToolTip.Tip="Wear figure"
+              ToolTip.Tip="Wear outfit"
             >
               <ic:SymbolIcon HorizontalAlignment="Center" VerticalAlignment="Center" Symbol="PersonArrowLeft" />
             </Button>

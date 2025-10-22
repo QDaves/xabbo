@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using ReactiveUI;
 using Avalonia.Controls.Selection;
 using FluentAvalonia.UI.Controls;
@@ -21,12 +21,19 @@ using SymbolIconSource = FluentIcons.Avalonia.Fluent.SymbolIconSource;
 
 namespace Xabbo.ViewModels;
 
-public sealed class WardrobePageViewModel : PageViewModel
+public sealed partial class WardrobePageViewModel : PageViewModel
 {
+    [GeneratedRegex(@"\b\d{25}\b")]
+    private static partial Regex OriginsFigureStringRegex();
+
+    [GeneratedRegex(@"\b[a-z]{2}(-\d+){1,3}(\.[a-z]{2}(-\d+){1,3})*\b")]
+    private static partial Regex ModernFigureStringRegex();
+
     public override string Header => "Wardrobe";
     public override IconSource? Icon => new SymbolIconSource { Symbol = Symbol.Backpack };
 
     private readonly IExtension _ext;
+    private readonly IClipboardService _clipboard;
     private readonly IDialogService _dialog;
     private readonly IWardrobeRepository _repository;
     private readonly IFigureConverterService _figureConverter;
@@ -45,16 +52,20 @@ public sealed class WardrobePageViewModel : PageViewModel
     public ReactiveCommand<Unit, Unit> AddCurrentFigureCmd { get; }
     public ReactiveCommand<Unit, Task> ImportWardrobeCmd { get; }
     public ReactiveCommand<Unit, Unit> RemoveOutfitsCmd { get; }
+    public ReactiveCommand<Unit, Unit> CopyOutfitsCmd { get; }
+    public ReactiveCommand<Unit, Task> PasteOutfitsCmd { get; }
     public ReactiveCommand<OutfitViewModel, Unit> WearFigureCmd { get; }
 
     public WardrobePageViewModel(
         IExtension extension,
+        IClipboardService clipboard,
         IDialogService dialog,
         IWardrobeRepository repository,
         IFigureConverterService figureConverter,
         IGameStateService gameState)
     {
         _ext = extension;
+        _clipboard = clipboard;
         _dialog = dialog;
         _repository = repository;
         _figureConverter = figureConverter;
@@ -83,6 +94,8 @@ public sealed class WardrobePageViewModel : PageViewModel
 
         AddCurrentFigureCmd = ReactiveCommand.Create(AddCurrentFigure);
         RemoveOutfitsCmd = ReactiveCommand.Create(RemoveOutfits);
+        CopyOutfitsCmd = ReactiveCommand.Create(CopyOutfits);
+        PasteOutfitsCmd = ReactiveCommand.Create(PasteOutfits);
         WearFigureCmd = ReactiveCommand.Create<OutfitViewModel>(WearFigure);
         ImportWardrobeCmd = ReactiveCommand.Create(
             ImportWardrobeAsync,
@@ -168,6 +181,61 @@ public sealed class WardrobePageViewModel : PageViewModel
             .ToArray();
         _repository.Remove(toRemove.Select(vm => vm.Model));
         _cache.Remove(toRemove);
+    }
+
+    private void CopyOutfits()
+    {
+        var toCopy = Selection
+            .SelectedItems
+            .OfType<OutfitViewModel>()
+            .ToArray();
+
+        if (toCopy.Length > 0)
+        {
+            _clipboard.SetText(string.Join(Environment.NewLine, toCopy.Select(x => x.Figure)));
+        }
+    }
+
+    private async Task PasteOutfits()
+    {
+        string? text = await _clipboard.GetTextAsync();
+        if (text is null)
+            return;
+
+        MatchCollection mc;
+
+        if (_ext.Session.Is(ClientType.Modern))
+        {
+            mc = ModernFigureStringRegex().Matches(text);
+        }
+        else if (_ext.Session.Is(ClientType.Origins))
+        {
+            mc = OriginsFigureStringRegex().Matches(text);
+        }
+        else
+        {
+            return;
+        }
+
+        foreach (Match m in mc)
+        {
+            var gender = Gender.Male;
+            if (_ext.Session.Is(ClientType.Modern))
+            {
+                if (!Figure.TryParse(m.Value, out Figure? figure) ||
+                    (figure.Gender is not Gender.Male && figure.Gender is not Gender.Female))
+                {
+                    gender = Gender.Male;
+                }
+            }
+            else
+            {
+                // TODO: Detect gender from origins figure strings
+                gender = _gameState.Profile.UserData?.Gender ?? Gender.Male;
+            }
+
+            AddFigure(gender, m.Value);
+        }
     }
 
     private void OnFigureConverterAvailable()

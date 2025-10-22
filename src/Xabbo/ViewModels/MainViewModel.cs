@@ -43,12 +43,13 @@ public class MainViewModel : ViewModelBase
         ChatPageViewModel chat,
         RoomPageViewModel room,
         GameDataPageViewModel gameData,
+        MimicPageViewModel mimic,
         InfoPageViewModel info,
         SettingsPageViewModel settings,
         ILauncherService launcher)
     {
         _config = config;
-        Pages = [general, wardrobe, inventory, friends, chat, room, gameData];
+        Pages = [general, wardrobe, inventory, friends, chat, room, gameData, mimic];
         FooterPages = [info, settings];
         SelectedPage = general;
 

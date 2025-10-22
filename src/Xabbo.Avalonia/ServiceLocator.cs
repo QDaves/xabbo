@@ -204,6 +204,7 @@ public static class ViewModelLocator
         Splatr.RegisterLazySingleton<RoomPageViewModel>();
         Splatr.RegisterLazySingleton<NavigatorPageViewModel>();
         Splatr.RegisterLazySingleton<GameDataPageViewModel>();
+        Splatr.RegisterLazySingleton<MimicPageViewModel>();
         Splatr.RegisterLazySingleton<InfoPageViewModel>();
         Splatr.RegisterLazySingleton<SettingsPageViewModel>();
 
@@ -218,6 +219,7 @@ public static class ViewModelLocator
         Splatr.RegisterLazySingleton<FurniDataViewModel>();
         Splatr.RegisterLazySingleton<ExternalTextsViewModel>();
         Splatr.RegisterLazySingleton<ExternalVariablesViewModel>();
+        Splatr.RegisterLazySingleton<MimicViewModel>();
 
         Splatr.RegisterLazySingleton<OfferItemsViewModel>();
     }

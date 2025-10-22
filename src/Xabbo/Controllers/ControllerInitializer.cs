@@ -1,4 +1,5 @@
 using Xabbo.Components;
+using Xabbo.ViewModels;
 
 namespace Xabbo.Controllers;
 
@@ -10,6 +11,7 @@ public sealed class ControllerInitializer(
     PrivacyController privacy,
     RoomFurniController roomFurni,
     RoomModerationController moderaion,
-    RoomRightsController rights
+    RoomRightsController rights,
+    MimicViewModel mimic
 );
 #pragma warning restore CS9113 // Parameter is unread.

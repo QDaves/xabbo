@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Project">
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Xabbo.GEarth</RootNamespace>
+    <Nullable>enable</Nullable>
+    <DebugType>embedded</DebugType>
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>Xabbo.GEarth</PackageId>
+    <PackageProjectUrl>https://xabbo.b7c.io/gearth</PackageProjectUrl>
+    <Description>A framework for creating G-Earth extensions.</Description>
+    <RepositoryUrl>https://github.com/xabbo/gearth.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <Authors>xabbo</Authors>
+    <Copyright>Copyright (c) xabbo 2024</Copyright>
+    <PackageTags>xabbo;habbo;gearth;g-earth</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup Label="Include package icon">
+    <None Include="..\..\res\xabbo-skull-128.png" Pack="true" PackagePath="icon.png" />
+  </ItemGroup>
+
+  <PropertyGroup Label="Rename paths">
+    <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+    <PathMap>$(AppOutputBase)=Xabbo.GEarth\</PathMap>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Library paths">
+    <XabboCommonDir Condition="$(XabboCommonDir) == ''">../../lib/common/</XabboCommonDir>
+  </PropertyGroup>
+
+  <ItemGroup Label="References">
+    <ProjectReference Include="$(XabboCommonDir)src\Xabbo.Common\Xabbo.Common.csproj" />
+    <ProjectReference Include="$(XabboCommonDir)src\Xabbo.Common.Generator\Xabbo.Common.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+    <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.0.2" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

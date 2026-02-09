@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Project">
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Xabbo.Core</AssemblyName>
+    <RootNamespace>Xabbo.Core</RootNamespace>
+    <Nullable>enable</Nullable>
+    <DebugType>embedded</DebugType>
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj/Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <Target Name="CleanSourceGeneratedFiles" BeforeTargets="Clean" DependsOnTargets="$(BeforeBuildDependsOn)">
+    <RemoveDir Directories="obj/Generated" />
+  </Target>
+
+  <PropertyGroup Label="Package">
+    <PackageId>Xabbo.Core</PackageId>
+    <PackageProjectUrl>https://xabbo.io</PackageProjectUrl>
+    <Description>Provides data structures, parsers, composers &amp; game state management for Xabbo.</Description>
+    <RepositoryUrl>https://github.com/xabbo/core.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <Authors>xabbo</Authors>
+    <Copyright>Copyright (c) xabbo 2024</Copyright>
+    <PackageTags>xabbo;habbo</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup Label="Include package icon">
+    <None Include="..\..\res\xabbo-skull-128.png" Pack="true" PackagePath="icon.png" />
+  </ItemGroup>
+
+  <PropertyGroup Label="Rename paths" Condition="'$(Configuration)'=='Release'">
+    <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+    <PathMap>$(AppOutputBase)=Xabbo.Core\</PathMap>
+  </PropertyGroup>
+
+  <ItemGroup Label="Resources">
+    <None Remove="Resources\figure_part_genders" />
+    <EmbeddedResource Include="Resources\figure_part_genders" />
+  </ItemGroup>
+
+  <PropertyGroup Label="Project import paths">
+    <XabboCommonDir Condition="$(XabboCommonDir) == ''">..\..\lib\common\</XabboCommonDir>
+    <XabboMessagesDir Condition="$(XabboMessagesDir) == ''">..\..\lib\messages\</XabboMessagesDir>
+  </PropertyGroup>
+
+  <ItemGroup Label="References">
+    <ProjectReference Include="$(XabboCommonDir)src\Xabbo.Common\Xabbo.Common.csproj" />
+    <ProjectReference Include="$(XabboCommonDir)src\Xabbo.Common.Generator\Xabbo.Common.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(XabboMessagesDir)src\Xabbo.Messages\Xabbo.Messages.csproj" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.0.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+  </ItemGroup>
+
+</Project>

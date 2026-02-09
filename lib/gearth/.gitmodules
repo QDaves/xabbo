@@ -1,0 +1,3 @@
+[submodule "common"]
+	path = lib/common
+	url = https://github.com/xabbo/common

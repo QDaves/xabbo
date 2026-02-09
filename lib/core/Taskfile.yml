@@ -1,0 +1,48 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  init:
+    cmds:
+      - git config --local core.hooksPath .githooks/
+  new-message:
+    desc: Creates a new message
+    interactive: true
+    cmds:
+      - .scripts/new-message.sh
+  new-request:
+    desc: Creates a new request message
+    interactive: true
+    cmds:
+      - .scripts/new-request.sh
+  test:
+    desc: Tests the library
+    deps: [build]
+    cmds:
+      - dotnet test --no-build
+  build:
+    desc: Builds the library
+    cmds:
+      - dotnet build
+  rebuild:
+    desc: Rebuilds the library
+    cmds:
+      - dotnet clean
+      - dotnet build-server shutdown
+      - dotnet build
+  pack:clean:
+    cmds:
+      - rm -rf ./pkg
+  pack:
+    desc: Creates a NuGet package
+    deps: [ pack:clean, test ]
+    cmds:
+      - dotnet pack src/Xabbo.Core -c Release -o pkg
+  pack:publish:
+    desc: Publishes a NuGet package
+    deps: [ pack ]
+    cmds:
+      - dotnet nuget push pkg/*.nupkg --api-key $(op read 'op://xabbo/nuget/credential') --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - git tag "v$(dotnet-gitversion /showvariable semver)"
+      - git push --tags

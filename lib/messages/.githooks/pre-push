@@ -1,7 +1,0 @@
-#!/bin/sh
-
-pop_stash() { git stash pop -q ; }
-git stash push -q --include-untracked
-trap pop_stash EXIT
-
-task test

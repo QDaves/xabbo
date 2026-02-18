@@ -1,6 +1,7 @@
 [submodule "Xabbo.Common"]
 	path = lib/common
-	url = https://github.com/xabbo/common
+	url = https://github.com/QDaves/common-xabbo
+	branch = common-xabbo
 [submodule "Xabbo.GEarth"]
 	path = lib/gearth
 	url = https://github.com/xabbo/gearth
@@ -10,4 +11,5 @@
 	branch = core-xabbo
 [submodule "Xabbo.Messages"]
 	path = lib/messages
-	url = https://github.com/xabbo/messages
+	url = https://github.com/QDaves/messages-xabbo
+	branch = messages-xabbo

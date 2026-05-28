@@ -1,3 +1,4 @@
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
@@ -32,17 +33,45 @@ public sealed class HabboApi : IHabboApi
             ?? throw new Exception($"Failed to deserialize {typeInfo.Type.Name}.");
     }
 
-    public Task<Web.Dto.MarketplaceItemStats> FetchMarketplaceItemStats(Hotel hotel, ItemType type, string identifier, CancellationToken cancellationToken = default)
+    private async Task<T> PostRequiredDataAsync<T>(Hotel hotel, string path, HttpContent content, CancellationToken cancellationToken = default)
+    {
+        if (!path.StartsWith('/'))
+            throw new ArgumentException("Path must start with '/'.", nameof(path));
+
+        var typeInfo = JsonWebContext.Default.GetTypeInfo(typeof(T)) as JsonTypeInfo<T>
+            ?? throw new Exception($"Failed to get type info for '{typeof(T)}'.");
+
+        var res = await _http.PostAsync($"https://{hotel.WebHost}{path}", content, cancellationToken);
+        res.EnsureSuccessStatusCode();
+
+        return await JsonSerializer.DeserializeAsync<T>(
+            res.Content.ReadAsStream(cancellationToken), typeInfo, cancellationToken)
+            ?? throw new Exception($"Failed to deserialize {typeInfo.Type.Name}.");
+    }
+
+    public Task<Web.Dto.MarketplaceResponse> FetchMarketplaceItemStats(Hotel hotel, ItemType type, string identifier, CancellationToken cancellationToken = default)
     {
         string? typeString = type switch
         {
-            ItemType.Floor => "roomItem",
-            ItemType.Wall => "wallItem",
+            ItemType.Floor => "roomItems",
+            ItemType.Wall => "wallItems",
             _ => throw new Exception($"Invalid item type: {type}.")
         };
 
-        return GetRequiredDataAsync<Web.Dto.MarketplaceItemStats>(
-            hotel, $"/api/public/marketplace/stats/{typeString}/{identifier}", cancellationToken);
+        var payload = new Dictionary<string, object>
+        {
+            [typeString] = new[]
+            {
+                new { item = identifier }
+            }
+        };
+
+        var json = JsonSerializer.Serialize(payload, JsonWebContext.Default.Options);
+
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        return PostRequiredDataAsync<Web.Dto.MarketplaceResponse>(
+            hotel, $"/api/public/marketplace/stats/batch/", content, cancellationToken);
     }
 
     public Task<Web.Dto.PhotoData> FetchPhotoDataAsync(Hotel hotel, string photoId, CancellationToken cancellationToken = default)

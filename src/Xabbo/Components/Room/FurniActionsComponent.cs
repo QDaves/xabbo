@@ -163,7 +163,22 @@ public partial class FurniActionsComponent : Component
                 Task.Run(async () => {
                     try
                     {
-                        var stats = await _api.FetchMarketplaceItemStats(Ext.Session.Hotel, furni.Type, furniInfo.Identifier);
+                        var response = await _api.FetchMarketplaceItemStats(Ext.Session.Hotel, furni.Type, furniInfo.Identifier);
+                        if (!response.Status.Equals("OK"))
+                        {
+                            _xabbot.ShowMessage($"Failed to fetch the marketplace endpoint.", location);
+                            return;
+                        }
+
+                        var list = furni.Type == ItemType.Floor ? response.RoomItemData : response.WallItemData;
+
+                        var stats = list.FirstOrDefault();
+                        if (stats == null)
+                        {
+                            _xabbot.ShowMessage($"No marketplace stats found for {furniInfo.Name} [{furniInfo.Identifier}].", location);
+                            return;
+                        }
+
                         int totalSold = stats.History.Sum(x => x.TotalSoldItems);
                         _xabbot.ShowMessage(
                             $"{furniInfo.Name} [{furniInfo.Identifier}]: average {stats.AveragePrice}c / "

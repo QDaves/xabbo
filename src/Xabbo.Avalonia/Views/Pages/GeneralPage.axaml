@@ -264,6 +264,7 @@
               <CheckBox Content="Wired messages" Classes="modern" IsEnabled="{Binding !#MuteAll.IsChecked}" IsChecked="{Binding Config.Chat.MuteWired}" />
               <CheckBox Content="Respects" Classes="modern" IsEnabled="{Binding !#MuteAll.IsChecked}" IsChecked="{Binding Config.Chat.MuteRespects}" />
               <CheckBox Content="Scratches" Classes="modern" IsEnabled="{Binding !#MuteAll.IsChecked}" IsChecked="{Binding Config.Chat.MuteScratches}" />
+              <CheckBox Content="Habbicons" Classes="modern" IsEnabled="{Binding !#MuteAll.IsChecked}" IsChecked="{Binding Config.Chat.MuteHabbicons}" />
             </WrapPanel>
           </Expander>
           <CheckBox Content="Show who respected" Classes="modern" IsChecked="{Binding Respected.ShowWhoRespected}" />

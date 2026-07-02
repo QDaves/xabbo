@@ -113,6 +113,12 @@ public partial class ChatComponent : Component
         }
     }
 
+    [InterceptIn("RoomUseHabbicon")]
+    private void OnRoomUseHabbicon(Intercept e)
+    {
+        if (Settings.Chat.MuteHabbicons) e.Block();
+    }
+
     [Intercept(ClientType.Modern)]
     [InterceptIn(nameof(In.RespectNotification))]
     private void OnUserRespect(Intercept e)

@@ -37,6 +37,9 @@ public class ChatPageViewModel : PageViewModel
     public ChatLogConfig Config => Settings.Chat.Log;
 
     private long _currentMessageId;
+    private static bool IsWiredBubble(int id) =>
+        id is 34 or (>= 200 and <= 202) or (>= 210 and <= 212) or (>= 220 and <= 229) or (>= 250 and <= 252);
+
     private readonly SourceCache<ChatLogEntryViewModel, long> _cache = new(x => x.EntryId);
 
     private readonly ReadOnlyObservableCollection<ChatLogEntryViewModel> _messages;
@@ -178,10 +181,10 @@ public class ChatPageViewModel : PageViewModel
     private void RoomManager_AvatarChat(AvatarChatEventArgs e)
     {
         if (!Settings.Chat.Log.Normal && e is { Avatar.Type: AvatarType.User, ChatType: not ChatType.Whisper }) return;
-        if (!Settings.Chat.Log.Whispers && e is { ChatType: ChatType.Whisper, BubbleStyle: not 34 }) return;
+        if (!Settings.Chat.Log.Whispers && e is { ChatType: ChatType.Whisper } && !IsWiredBubble(e.BubbleStyle)) return;
         if (!Settings.Chat.Log.Bots && e.Avatar.Type is AvatarType.PublicBot or AvatarType.PrivateBot) return;
         if (!Settings.Chat.Log.Pets && e.Avatar.Type is AvatarType.Pet) return;
-        if (!Settings.Chat.Log.Wired && e is { ChatType: ChatType.Whisper, BubbleStyle: 34 }) return;
+        if (!Settings.Chat.Log.Wired && e is { ChatType: ChatType.Whisper } && IsWiredBubble(e.BubbleStyle)) return;
 
         IRoom? room = _roomManager.Room;
         if (room is null) return;

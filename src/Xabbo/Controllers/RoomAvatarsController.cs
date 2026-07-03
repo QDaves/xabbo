@@ -1,4 +1,4 @@
-using ReactiveUI;
+﻿using ReactiveUI;
 using Xabbo.Core;
 using Xabbo.Core.Game;
 using Xabbo.Core.Messages.Incoming;
@@ -45,6 +45,18 @@ public sealed partial class RoomAvatarsController : ControllerBase
         {
             Send(new AvatarsAddedMsg(room.Avatars.OfType<Avatar>()));
             Send(new AvatarStatusMsg(room.Avatars.Select(x => x.CurrentUpdate).OfType<AvatarStatus>()));
+
+            foreach (var avatar in room.Avatars)
+            {
+                if (avatar.HandItem != 0)
+                    Send(new AvatarHandItemMsg(avatar.Index, avatar.HandItem));
+
+                if (avatar.Effect != 0)
+                    Send(new AvatarEffectMsg(avatar.Index, avatar.Effect, 0));
+
+                if (avatar.Dance != 0)
+                    Send(new AvatarDanceMsg(avatar.Index, avatar.Dance));
+            }
         }
     }
 

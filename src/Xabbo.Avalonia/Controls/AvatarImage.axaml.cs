@@ -1,5 +1,6 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.Primitives;
+using Xabbo.Avalonia.Services;
 using Xabbo.Utility;
 
 namespace Xabbo.Avalonia.Controls;
@@ -63,6 +64,7 @@ public class AvatarImage : TemplatedControl
         get => _avatarImageUrl;
         private set => SetAndRaise(AvatarImageUrlProperty, ref _avatarImageUrl, value);
     }
+    private static string WebHost => XabboImageLoader.Instance.WebHost;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -84,7 +86,8 @@ public class AvatarImage : TemplatedControl
                     figure: FigureString,
                     direction: Direction,
                     headOnly: HeadOnly,
-                    name: UserName
+                    name: UserName,
+                    webHost: WebHost
                 );
             }
         }

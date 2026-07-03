@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -281,6 +281,7 @@ public sealed class XabboAppManager : IApplicationManager
         _lastSession = e.Session;
         _currentDisconnectReason = DisconnectReason.Unknown;
         _extension.Intercept<DisconnectReasonMsg>(HandleDisconnectReason);
+        XabboImageLoader.Instance.WebHost = _lastSession.Hotel.WebHost;
 
         _uiContext.Invoke(() =>
         {

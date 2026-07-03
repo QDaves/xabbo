@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,6 +13,7 @@ public sealed class XabboImageLoader(HttpClient httpClient, bool disposeHttpClie
     public static XabboImageLoader Instance { get; }
 
     private readonly ConcurrentDictionary<string, DateTime> _failureCache = [];
+    public string WebHost { get; set; } = "www.habbo.com";
 
     static XabboImageLoader()
     {
